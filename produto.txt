@@ -1,0 +1,113 @@
+def carregar_produtos():
+    if not os.path.exists('produtos.txt'):
+        return []
+    try:
+        with open('produtos.txt', 'r') as file:
+            return json.load(file)
+    except json.JSONDecodeError:
+        print("Erro ao decodificar produtos. O arquivo pode estar vazio ou corrompido.")
+        return []
+    except Exception as e:
+        print(f"Ocorreu um erro ao carregar os produtos: {e}")
+        return []
+
+def salvar_produtos(produtos):
+    with open('produtos.txt', 'w') as file:
+        json.dump(produtos, file)
+
+def adicionar_produto(nome, preco_compra, preco_venda, fabricante):
+    produtos = carregar_produtos()
+    produtos.append({
+        'nome': nome,
+        'fabricante': fabricante,
+        'preco_compra': preco_compra,
+        'preco_venda': preco_venda
+    })
+    salvar_produtos(produtos)
+    print(f'Produto "{nome}" adicionado com sucesso.')
+
+def remover_produto(nome):
+    produtos = carregar_produtos()
+    produtos = [produto for produto in produtos if produto['nome'] != nome]
+    salvar_produtos(produtos)
+    print(f'Produto "{nome}" removido com sucesso.')
+
+def carregar_fabricantes():
+    if not os.path.exists('fabricantes.txt'):
+        return []
+    try:
+        with open('fabricantes.txt', 'r') as file:
+            return json.load(file)
+    except json.JSONDecodeError:
+        print("Erro ao decodificar fabricantes. O arquivo pode estar vazio ou corrompido.")
+        return []
+    except Exception as e:
+        print(f"Ocorreu um erro ao carregar os fabricantes: {e}")
+        return []
+
+def salvar_fabricantes(fabricantes):
+    with open('fabricantes.txt', 'w') as file:
+        json.dump(fabricantes, file)
+
+def adicionar_fabricante(nome, telefone, email):
+    fabricantes = carregar_fabricantes()
+    fabricantes.append({'nome': nome, 'telefone': telefone, 'email': email})
+    salvar_fabricantes(fabricantes)
+    print(f'Fabricante "{nome}" adicionado com sucesso.')
+
+def atualizar_produto(nome, novo_preco_compra, novo_preco_venda):
+    produtos = carregar_produtos()
+    for produto in produtos:
+        if produto['nome'] == nome:
+            produto['preco_compra'] = novo_preco_compra
+            produto['preco_venda'] = novo_preco_venda
+            salvar_produtos(produtos)
+            print(f'Produto "{nome}" atualizado com sucesso.')
+            return
+    print(f'Produto "{nome}" não encontrado.')
+
+def listar_fabricantes():
+    fabricantes = carregar_fabricantes()
+    print("Lista de Fabricantes:")
+    for fabricante in fabricantes:
+        print(f"Nome: {fabricante['nome']}, Telefone: {fabricante['telefone']}, E-mail: {fabricante['email']}")
+
+def listar_produtos():
+    produtos = carregar_produtos()
+    if not produtos:
+        print("Nenhum produto encontrado.")
+        return
+    print("Lista de Produtos:")
+    for produto in produtos:
+        print(f"Nome: {produto['nome']}, Preço de Compra: R${produto['preco_compra']:.2f}, Preço de Venda: R${produto['preco_venda']:.2f}")
+def detalhes_do_produto(produto_nome):
+    produtos = carregar_produtos()
+    for produto in produtos:
+        if produto['nome'] == produto_nome:
+            print(f"Nome: {produto['nome']}, Preço de Compra: R${produto['preco_compra']:.2f}, Preço de Venda: R${produto['preco_venda']:.2f}")
+            return
+    print(f'Produto "{produto_nome}" não encontrado.')
+
+def processar_adicionar_produto():
+    nome = input("Nome do produto: ")
+    fabricante = input("Nome do fabricante: ")
+    while True:
+        try:
+            preco_compra = float(input("Preço de compra do produto: "))
+            if preco_compra < 0:
+                print("O preço de compra não pode ser negativo.")
+                continue
+            preco_venda = float(input("Preço de venda do produto: "))
+            if preco_venda < 0:
+                print("O preço de venda não pode ser negativo.")
+                continue
+            break
+        except ValueError:
+            print("Por favor, insira um valor numérico válido.")
+    adicionar_produto(nome, preco_compra, preco_venda, fabricante)
+
+def processar_adicionar_fabricante():
+    nome = input("Nome do fabricante: ")
+    telefone = input("Telefone do fabricante: ")
+    email = input("E-mail do fabricante: ")
+    adicionar_fabricante(nome, telefone, email)
