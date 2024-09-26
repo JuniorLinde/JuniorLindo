@@ -1,0 +1,23 @@
+def registrar_compra(produto_nome, quantidade):
+    if not any(produto['nome'] == produto_nome for produto in carregar_produtos()):
+        print(f'Produto "{produto_nome}" não encontrado.')
+        return
+    with open('compras.txt', 'a') as file:
+        file.write(f"{produto_nome},{quantidade}\n")
+    print(f'Compra de {quantidade} unidades de "{produto_nome}" registrada.')
+def cancelar_compra(produto_nome, quantidade):
+    with open('compras.txt', 'a') as file:
+        file.write(f"{produto_nome},{-quantidade}\n")
+    print(f'Compra de {quantidade} unidades de "{produto_nome}" cancelada.')
+def saldo_financeiro():
+    produtos = carregar_produtos()
+    if not produtos:
+        print("Nenhum produto encontrado.")
+        return
+
+    total_vendas = sum(produto['preco_venda'] for produto in produtos)
+    total_compras = sum(produto['preco_compra'] for produto in produtos)
+
+    print(f'Saldo financeiro: R${total_vendas:.2f}')
+    print(f'Total de compras: R${total_compras:.2f}')
+    print(f'Saldo líquido: R${total_vendas - total_compras:.2f}')
